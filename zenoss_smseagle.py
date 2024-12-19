@@ -101,7 +101,8 @@ def main():
        	    timestamp = "["+time.strftime("%Y-%m-%d %H:%M:%S")+"]"
        	    log.write("%s ===== BEGIN SENDING SMS ==== \n" % timestamp)			
        	    log.write("%s SMS recipient: %s\n" % (timestamp, rcpt))
-       	    log.write("%s SMS text: %s\n" % (timestamp, msg))
+       	    if SMSEAGLE_TYPE != 'ring':
+       	        log.write("%s SMS text: %s\n" % (timestamp, msg))
 			
        	#HTTP request to SMSEagle
        	result = urllib2.urlopen(url).read()
