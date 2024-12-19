@@ -38,6 +38,9 @@ import urllib2
 SMSEAGLE_USER = "john"
 SMSEAGLE_PASSWORD = "doe"
 SMSEAGLE_IP = "192.168.0.101"
+SMSEAGLE_TYPE = "sms"
+SMSEAGLE_DURATION = "10"
+SMSEAGLE_VOICE_ID = "1"
 LOG_ENABLED = 0
 #
 
@@ -62,10 +65,34 @@ def main():
     try:
        	# Read message from standard in
        	msg = sys.stdin.read()
+       	
+       	method = "send_sms"
+       	
+       	match (SMSEAGLE_TYPE):
+       	    case 'ring':
+       	        method = 'ring_call'
+            case 'tts':
+                method = 'tts_call'
+            case 'tts_adv':
+                method = 'tts_adv_call'
 
        	# Prepare HTTP request
-       	base_url = "http://"+SMSEAGLE_IP+"/index.php/http_api/send_sms"
-       	query_args = { 'login':SMSEAGLE_USER, 'pass':SMSEAGLE_PASSWORD, 'to':rcpt, 'message':msg}
+       	base_url = "http://"+SMSEAGLE_IP+"/index.php/http_api/"+method
+       	query_args = { 'login':SMSEAGLE_USER, 'pass':SMSEAGLE_PASSWORD, 'to':rcpt}
+       	
+       	match (SMSEAGLE_TYPE):
+            case 'ring':
+                query_args['duration':SMSEAGLE_DURATION]
+            case 'tts':
+                query_args['message':msg]
+                query_args['duration':SMSEAGLE_DURATION]
+            case 'tts_adv':
+                query_args['message':msg]
+                query_args['duration':SMSEAGLE_DURATION]
+                query_args['voice_id':SMSEAGLE_VOICE_ID]
+            case _:
+                query_args['message':msg]
+       	
        	encoded_args = urllib.urlencode(query_args)
        	url = base_url + '?' + encoded_args
        	
