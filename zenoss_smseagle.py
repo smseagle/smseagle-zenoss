@@ -19,7 +19,7 @@
 #
 # 1. Create a user/password in SMSEagle
 #
-# 2. Edit variables SMSEAGLE_USER, SMSEAGLE_PASSWORD, SMSEAGLE_IP in code below
+# 2. Edit variables SMSEAGLE_TOKEN, SMSEAGLE_IP, SMSEAGLE_TYPE in code below
 #
 # 3. Configure Zenoss (see tutorial http://www.smseagle.eu/plugins.php)
 #
@@ -48,7 +48,7 @@ def main():
        	# Read recipient number
         rcpt = sys.argv[1]
     except:
-        print "Invalid arguments! Usage: zenoss_smseagle <recipient>"
+        print("Invalid arguments! Usage: zenoss_smseagle <recipient>")
         sys.exit(1)
     
     try:
@@ -57,7 +57,7 @@ def main():
             file = os.environ['ZENHOME']+"/log/sms_smseagle.log"
             log = open(file, 'a')
     except:
-        print "Cannot open log file!"
+        print("Cannot open log file!")
         sys.exit(2) 
     	
     try:
@@ -75,23 +75,21 @@ def main():
                 method = 'calls/tts_advanced'
 
        	# Prepare HTTP request
-       	base_url = "http://"+SMSEAGLE_IP+"/api/v2/"+method
-       	query_args = {'login':SMSEAGLE_USER, 'pass':SMSEAGLE_PASSWORD, 'to':{rcpt}}
+       	url = "http://"+SMSEAGLE_IP+"/api/v2/"+method
+       	query_args = {'to':[rcpt]}
        	
        	match (SMSEAGLE_TYPE):
             case 'ring':
-                query_args['duration':SMSEAGLE_DURATION]
+                query_args['duration'] = SMSEAGLE_DURATION
             case 'tts':
-                query_args['message':msg]
-                query_args['duration':SMSEAGLE_DURATION]
+                query_args['text'] = msg
+                query_args['duration'] = SMSEAGLE_DURATION
             case 'tts_adv':
-                query_args['message':msg]
-                query_args['duration':SMSEAGLE_DURATION]
-                query_args['voice_id':SMSEAGLE_VOICE_ID]
+                query_args['text'] = msg
+                query_args['duration'] = SMSEAGLE_DURATION
+                query_args['voice_id'] = SMSEAGLE_VOICE_ID
             case _:
-                query_args['message':msg]
-       	
-       	url = base_url + '?' + encoded_args
+                query_args['text'] = msg
        	
        	# Write log if logging enabled
        	if LOG_ENABLED:
@@ -102,18 +100,20 @@ def main():
        	        log.write("%s SMS text: %s\n" % (timestamp, msg))
 			
        	#HTTP request to SMSEagle
-       	result = requests.post(url, json = query_args)
+       	result = requests.post(url, json = query_args, headers={"Content-Type":"application/json", "access-token":SMSEAGLE_TOKEN})
+       	print(result)
+       	print(result.content.decode('UTF-8'))
     	
         # Write log if logging enabled
         if LOG_ENABLED:
             timestamp = "["+time.strftime("%Y-%m-%d %H:%M:%S")+"]"
             try:
-                log.write("%s Sending result: %s\n" % (timestamp, result.text))
+                log.write("%s Sending result: %s\n%s" % (timestamp, result, result.content.decode('UTF-8')))
                 log.write("%s ===== END SENDING SMS ====\n" % timestamp)
             finally:
                 log.close()
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         sys.exit(1)
 		
     
