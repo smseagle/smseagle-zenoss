@@ -17,7 +17,7 @@
 #
 # ============================== SETUP =========================================
 #
-# 1. Create a user/password in SMSEagle
+# 1. Create a user in SMSEagle and assign to it the right permissions
 #
 # 2. Edit variables SMSEAGLE_TOKEN, SMSEAGLE_IP, SMSEAGLE_TYPE in code below
 #
