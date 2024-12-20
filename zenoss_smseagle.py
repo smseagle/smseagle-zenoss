@@ -37,8 +37,8 @@ import requests
 SMSEAGLE_TOKEN = "123abc456def"
 SMSEAGLE_IP = "192.168.0.101"
 SMSEAGLE_TYPE = "sms"
-SMSEAGLE_DURATION = "10"
-SMSEAGLE_VOICE_ID = "1"
+SMSEAGLE_DURATION = 10
+SMSEAGLE_VOICE_ID = 1
 LOG_ENABLED = 0
 #
 
@@ -80,14 +80,14 @@ def main():
        	
        	match (SMSEAGLE_TYPE):
             case 'ring':
-                query_args['duration':int(SMSEAGLE_DURATION)]
+                query_args['duration':SMSEAGLE_DURATION]
             case 'tts':
                 query_args['message':msg]
-                query_args['duration':int(SMSEAGLE_DURATION)]
+                query_args['duration':SMSEAGLE_DURATION]
             case 'tts_adv':
                 query_args['message':msg]
-                query_args['duration':int(SMSEAGLE_DURATION)]
-                query_args['voice_id':int(SMSEAGLE_VOICE_ID)]
+                query_args['duration':SMSEAGLE_DURATION]
+                query_args['voice_id':SMSEAGLE_VOICE_ID]
             case _:
                 query_args['message':msg]
        	
