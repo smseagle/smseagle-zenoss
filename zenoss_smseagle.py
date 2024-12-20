@@ -61,8 +61,11 @@ def main():
         sys.exit(2) 
     	
     try:
+        msg = ""
+        
        	# Read message from standard in
-       	msg = sys.stdin.read()
+       	if SMSEAGLE_TYPE != 'ring':
+       	    msg = sys.stdin.read()
        	
        	method = "messages/sms"
        	
